@@ -1,0 +1,9 @@
+{
+  "name": "sharebin-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": "https://github.com/Galacs/ShareBin-server.git",
+  "author": "Rémi Ait-Younes <remi.aityounes@gmail.com>",
+  "license": "none",
+  "private": true
+}
