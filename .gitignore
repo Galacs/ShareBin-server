@@ -76,4 +76,4 @@ typings/
 .fusebox/
 
 # # JWT private key
-# id_rsa_priv.pem
+#.keys/id_rsa_priv.pem

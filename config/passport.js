@@ -7,7 +7,7 @@ const User = mongoose.model('User');
 
 const JwtStrategy = passportJwt.Strategy;
 
-const pathToKey = path.join('id_rsa_pub.pem');
+const pathToKey = path.join(path.resolve(), 'keys', 'id_rsa_pub.pem');
 const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 function fromCookieAsToken() {

@@ -5,6 +5,7 @@
  */
 import crypto from 'crypto';
 import fs from 'fs';
+import path from 'path';
 
 function genKeyPair() {
   // Generates an object where the keys are stored in properties `privateKey` and `publicKey`
@@ -21,10 +22,10 @@ function genKeyPair() {
   });
 
   // Create the public key file
-  fs.writeFileSync('id_rsa_pub.pem', keyPair.publicKey);
+  fs.writeFileSync(path.join(__dirname, 'keys', 'id_rsa_pub.pem'), keyPair.publicKey);
 
   // Create the private key file
-  fs.writeFileSync('id_rsa_priv.pem', keyPair.privateKey);
+  fs.writeFileSync(path.join(__dirname, 'keys', 'id_rsa_priv.pem'), keyPair.privateKey);
 }
 
 // Generate the keypair
