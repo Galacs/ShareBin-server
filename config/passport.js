@@ -12,9 +12,19 @@ const JwtStrategy = passportJwt.Strategy;
 const pathToKey = path.join('id_rsa_pub.pem');
 const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
 
+function fromCookieAsToken() {
+  return (req) => {
+    let token = null;
+    if (req.cookies.token) {
+      token = req.cookies.token;
+    }
+    return token;
+  };
+}
+
 // At a minimum, you must pass the `jwtFromRequest` and `secretOrKey` properties
 const options = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: fromCookieAsToken(),
   secretOrKey: PUB_KEY,
   algorithms: ['RS256'],
 };

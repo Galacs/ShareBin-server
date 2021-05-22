@@ -19,8 +19,17 @@ router.post('/login', (req, res, next) => {
       if (isValid) {
         const tokenObject = issueJWT(user);
 
-        res.status(200)
-          .json({ success: true, token: tokenObject.token, expiresIn: tokenObject.expires });
+        // Create new Date instance
+        const date = new Date();
+        // Add a day
+        date.setDate(date.getDate() + 1);
+
+        res.cookie('token', tokenObject.token, {
+          expires: date,
+          secure: false,
+          httpOnly: true,
+        });
+        res.status(200).json({ success: true });
       } else {
         res.status(401).json({ success: false, msg: 'you have entered the wrong password' });
       }
