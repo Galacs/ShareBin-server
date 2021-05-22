@@ -31,7 +31,7 @@ const options = {
 export default function configPassport(passport) {
   passport.use(
     new JwtStrategy(options, (jwtPayload, done) => {
-      console.log(jwtPayload);
+      // console.log(jwtPayload);
 
       // We will assign the `sub` property on the JWT to the database ID of user
       User.findOne({ _id: jwtPayload.sub }, (err, user) => {
