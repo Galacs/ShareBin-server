@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 
 const User = mongoose.model('User');
 
-const { ExtractJwt } = passportJwt;
 const JwtStrategy = passportJwt.Strategy;
 
 // const pathToKey = path.join(__dirname, '..', 'id_rsa_pub.pem');
