@@ -11,7 +11,7 @@ const User = mongoose.model('User');
 // Validate an existing user and issue a JWT
 router.post('/login', (req, res, next) => {
   // User.findOne({ auth: { local: { username: req.body.username } } })
-  User.findOne({ 'auth.local.username': req.body.username })
+  User.findOne({ 'auth.local.username': req.body.username }, { 'auth.local': 1 })
     .then((user) => {
       if (!user) {
         return res.status(401).json({ success: false, msg: 'could not find user' });
@@ -45,7 +45,7 @@ router.post('/login', (req, res, next) => {
 // Register a new user
 router.post('/register', (req, res) => {
   // Check if user already exists
-  User.findOne({ 'auth.local.username': req.body.username })
+  User.findOne({ 'auth.local.username': req.body.username }, {})
     .then((username) => {
       if (!username) {
         const saltHash = genPassword(req.body.password);
@@ -85,7 +85,7 @@ router.post('/delete', passport.authenticate('jwt', { session: false }), (req, r
 //   }
 
   // Check if the user exists
-  User.findOne({ _id: jwt.decode(req.cookies.token).sub })
+  User.findOne({ _id: jwt.decode(req.cookies.token).sub }, {})
     .then((user) => {
       if (user) {
         User.deleteOne(user, (err) => {
