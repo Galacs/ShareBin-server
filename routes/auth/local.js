@@ -10,14 +10,15 @@ const User = mongoose.model('User');
 
 // Validate an existing user and issue a JWT
 router.post('/login', (req, res, next) => {
-  User.findOne({ username: req.body.username })
+  // User.findOne({ auth: { local: { username: req.body.username } } })
+  User.findOne({ 'auth.local.username': req.body.username })
     .then((user) => {
       if (!user) {
         return res.status(401).json({ success: false, msg: 'could not find user' });
       }
       // Function defined at bottom of app.js
 
-      const isValid = validPassword(req.body.password, user.hash, user.salt);
+      const isValid = validPassword(req.body.password, user.auth.local.hash, user.auth.local.salt);
       if (isValid) {
         const tokenObject = issueJWT(user);
 
@@ -44,7 +45,7 @@ router.post('/login', (req, res, next) => {
 // Register a new user
 router.post('/register', (req, res) => {
   // Check if user already exists
-  User.findOne({ username: req.body.username })
+  User.findOne({ 'auth.local.username': req.body.username })
     .then((username) => {
       if (!username) {
         const saltHash = genPassword(req.body.password);
@@ -53,9 +54,13 @@ router.post('/register', (req, res) => {
         const { hash } = saltHash;
 
         const newUser = new User({
-          username: req.body.username,
-          hash,
-          salt,
+          auth: {
+            local: {
+              username: req.body.username,
+              hash,
+              salt,
+            },
+          },
         });
 
         try {

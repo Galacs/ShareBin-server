@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
-  username: String,
-  hash: String,
-  salt: String,
+  auth: {
+    local: {
+      username: String,
+      hash: String,
+      salt: String,
+    },
+  },
 });
 
 mongoose.model('User', UserSchema);
