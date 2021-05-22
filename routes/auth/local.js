@@ -8,13 +8,11 @@ const User = mongoose.model('User');
 
 // Validate an existing user and issue a JWT
 router.post('/login', (req, res, next) => {
-  // User.findOne({ auth: { local: { username: req.body.username } } })
   User.findOne({ 'auth.local.username': req.body.username }, { 'auth.local': 1 })
     .then((user) => {
       if (!user) {
         return res.status(401).json({ success: false, msg: 'could not find user' });
       }
-      // Function defined at bottom of app.js
 
       const isValid = validPassword(req.body.password, user.auth.local.hash, user.auth.local.salt);
       if (isValid) {
