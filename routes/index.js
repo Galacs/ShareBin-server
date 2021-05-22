@@ -1,9 +1,9 @@
 import express from 'express';
 
-import users from './users.js';
+import authLocal from './auth/local.js';
 
 const router = express.Router();
 
-router.use('/users', users);
+router.use('/auth/local', authLocal);
 
 export default router;

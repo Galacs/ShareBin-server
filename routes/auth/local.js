@@ -1,15 +1,10 @@
 import mongoose from 'mongoose';
 import express from 'express';
-import passport from 'passport';
 
-import { issueJWT, genPassword, validPassword } from '../lib/utils.js';
+import { issueJWT, genPassword, validPassword } from '../../lib/utils.js';
 
 const router = express.Router();
 const User = mongoose.model('User');
-
-router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.status(200).json({ success: true, msg: 'You are successfully authenticated to this route!' });
-});
 
 // Validate an existing user and issue a JWT
 router.post('/login', (req, res, next) => {
