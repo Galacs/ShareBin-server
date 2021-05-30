@@ -84,7 +84,7 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), async (
     });
 
     await paralellUploads3.done();
-    res.json({ success: true });
+    res.json({ success: true, fileid: uuid });
   } catch (e) {
     res.json({ success: false, msg: e });
   }
