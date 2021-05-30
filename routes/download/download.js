@@ -29,7 +29,7 @@ router.get('/download/:key', async (req, res) => {
     }));
     filename = filename.TagSet.find((obj) => obj.Key === 'filename').Value;
     res.writeHead(200, {
-      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Disposition': `filename="${filename}"`,
       'Content-Type': mime.contentType(filename) || 'application/octet-stream',
       'Content-Length': data.ContentLength,
     });
