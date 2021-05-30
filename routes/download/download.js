@@ -22,17 +22,29 @@ router.get('/download/:key', async (req, res) => {
     const data = await client.send(new GetObjectCommand({
       Bucket: bucket,
       Key: req.params.key,
+      Range: req.header('Range'),
     }));
     let filename = await client.send(new GetObjectTaggingCommand({
       Bucket: bucket,
       Key: req.params.key,
     }));
     filename = filename.TagSet.find((obj) => obj.Key === 'filename').Value;
-    res.writeHead(200, {
-      'Content-Disposition': `filename="${filename}"`,
-      'Content-Type': mime.contentType(filename) || 'application/octet-stream',
-      'Content-Length': data.ContentLength,
-    });
+    if (req.header('Range') === 'bytes=0-' || !req.header('Range')) {
+      res.writeHead(200, {
+        'Accept-Ranges': 'bytes',
+        'Content-Disposition': `filename="${filename}"`,
+        'Content-Type': mime.contentType(filename) || 'application/octet-stream',
+        'Content-Length': data.ContentLength,
+      });
+    } else {
+      res.writeHead(206, {
+        'Accept-Ranges': 'bytes',
+        'Content-Disposition': `filename="${filename}"`,
+        'Content-Type': mime.contentType(filename) || 'application/octet-stream',
+        'Content-Range': data.ContentRange,
+        'Content-Length': data.ContentLength,
+      });
+    }
     data.Body.pipe(res);
   } catch (error) {
     return res.status(404).json({ success: false, msg: 'Not found' });
