@@ -11,7 +11,7 @@ import routes from './routes/index.js';
 configPassport(passport);
 
 const app = express();
-const port = 1500;
+const port = process.env.PORT || 1500;
 
 app.use(express.json());
 app.use(cors());
