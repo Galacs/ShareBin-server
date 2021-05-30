@@ -32,7 +32,6 @@ const client = new S3Client({
 });
 const router = express.Router();
 
-// Delete a user (GPDR)
 router.post('/upload', passport.authenticate('jwt', { session: false }), async (req, res) => {
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';
