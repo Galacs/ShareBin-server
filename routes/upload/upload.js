@@ -81,7 +81,7 @@ router.post('/upload', passport.authenticate('jwt', { session: false }), async (
     });
 
     paralellUploads3.on('httpUploadProgress', (progress) => {
-      console.log(progress);
+      console.log(Math.round((progress.loaded / req.header('Content-Length')) * 100));
     });
 
     await paralellUploads3.done();
