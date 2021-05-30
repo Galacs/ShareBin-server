@@ -29,19 +29,19 @@ router.get('/download/:key', async (req, res) => {
       Key: req.params.key,
     }));
     filename = filename.TagSet.find((obj) => obj.Key === 'filename').Value;
-    if (req.header('Range') === 'bytes=0-' || !req.header('Range')) {
-      res.writeHead(200, {
-        'Accept-Ranges': 'bytes',
-        'Content-Disposition': `filename="${filename}"`,
-        'Content-Type': mime.contentType(filename) || 'application/octet-stream',
-        'Content-Length': data.ContentLength,
-      });
-    } else {
+    if (req.header('Range')) {
       res.writeHead(206, {
         'Accept-Ranges': 'bytes',
         'Content-Disposition': `filename="${filename}"`,
         'Content-Type': mime.contentType(filename) || 'application/octet-stream',
         'Content-Range': data.ContentRange,
+        'Content-Length': data.ContentLength,
+      });
+    } else {
+      res.writeHead(200, {
+        'Accept-Ranges': 'bytes',
+        'Content-Disposition': `filename="${filename}"`,
+        'Content-Type': mime.contentType(filename) || 'application/octet-stream',
         'Content-Length': data.ContentLength,
       });
     }
