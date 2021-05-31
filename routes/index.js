@@ -2,14 +2,11 @@ import express from 'express';
 
 import authLocal from './auth/local.js';
 import account from './account.js';
-import upload from './upload/upload.js';
-import download from './download/download.js';
+import files from './files/index.js';
 
 const router = express.Router();
 
 router.use('/auth/local', authLocal);
 router.use('/account', account);
-router.use('/upload', upload);
-router.use('/download', download);
-
+router.use('/files', files);
 export default router;

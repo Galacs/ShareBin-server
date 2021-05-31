@@ -17,7 +17,7 @@ const client = new S3Client({
 });
 const router = express.Router();
 
-router.get('/download/:key', async (req, res) => {
+router.get('/:key', async (req, res) => {
   try {
     const data = await client.send(new GetObjectCommand({
       Bucket: bucket,
