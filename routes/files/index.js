@@ -5,7 +5,7 @@ import download from './download.js';
 
 const router = express.Router();
 
-router.use('/upload', upload);
-router.use('/download', download);
+router.use('/', upload);
+router.use('/', download);
 
 export default router;

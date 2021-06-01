@@ -87,7 +87,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
     res.json({
       success: true,
       fileid: uuid,
-      url: `${process.env.URL || 'localhost:1500'}/download/download/${uuid}`,
+      url: `${process.env.URL || 'localhost:1500'}/files/${uuid}`,
     });
   } catch (e) {
     res.json({ success: false, msg: e });
