@@ -1,20 +1,10 @@
 import express from 'express';
 import mime from 'mime-types';
 
-import { S3Client, GetObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3';
 
-const bucket = 'bucket';
+import client, { bucket } from '../../config/s3.js';
 
-const client = new S3Client({
-  forcePathStyle: true,
-  endpoint: 'http://127.0.0.1:9000',
-  tls: false,
-  region: 'my-store',
-  credentials: {
-    accessKeyId: 'minioadmin',
-    secretAccessKey: 'minioadmin',
-  },
-});
 const router = express.Router();
 
 router.get('/:key', async (req, res) => {
