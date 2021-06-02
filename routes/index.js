@@ -1,7 +1,7 @@
 import express from 'express';
 
 import authLocal from './auth/local.js';
-import account from './account.js';
+import account from './account/index.js';
 import files from './files/index.js';
 
 const router = express.Router();
