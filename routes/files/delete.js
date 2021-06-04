@@ -1,20 +1,10 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 
-import { S3Client, DeleteObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3';
 
-const bucket = 'bucket';
+import client, { bucket } from '../../config/s3.js';
 
-const client = new S3Client({
-  forcePathStyle: true,
-  endpoint: 'http://127.0.0.1:9000',
-  tls: false,
-  region: 'my-store',
-  credentials: {
-    accessKeyId: 'minioadmin',
-    secretAccessKey: 'minioadmin',
-  },
-});
 const router = express.Router();
 
 router.delete('/:key', async (req, res) => {
@@ -24,6 +14,8 @@ router.delete('/:key', async (req, res) => {
       Key: req.params.key,
     }));
     owner = owner.TagSet.find((obj) => obj.Key === 'owner').Value;
+    console.log(owner);
+    console.log(jwt.decode(req.cookies.token).sub);
     if (owner === jwt.decode(req.cookies.token).sub) {
       try {
         await client.send(new DeleteObjectCommand({
