@@ -13,6 +13,6 @@ describe('Testing ping routes', () => {
   });
   it('Testing protected route', async () => {
     await supertest(app).get('/protected')
-      .expect(404, 'Unauthorized');
+      .expect(401, 'Unauthorized');
   });
 });
