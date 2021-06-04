@@ -9,14 +9,14 @@ const router = express.Router();
 
 router.get('/:key', async (req, res) => {
   try {
+    let filename = await client.send(new GetObjectTaggingCommand({
+      Bucket: bucket,
+      Key: req.params.key,
+    }));
     const data = await client.send(new GetObjectCommand({
       Bucket: bucket,
       Key: req.params.key,
       Range: req.header('Range'),
-    }));
-    let filename = await client.send(new GetObjectTaggingCommand({
-      Bucket: bucket,
-      Key: req.params.key,
     }));
     filename = filename.TagSet.find((obj) => obj.Key === 'filename').Value;
     if (req.header('Range')) {
@@ -35,6 +35,10 @@ router.get('/:key', async (req, res) => {
         'Content-Length': data.ContentLength,
       });
     }
+    res.on('close', () => {
+      console.log('closed');
+      data.Body.destroy();
+    });
     data.Body.pipe(res);
   } catch (error) {
     return res.status(404).json({ success: false, msg: 'Not found' });
