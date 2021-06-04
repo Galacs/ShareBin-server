@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import passport from 'passport';
 
-import { } from './config/database.js';
+import db from './config/database.js';
 import { } from './models/user.js';
 import configPassport from './config/passport.js';
 import routes from './routes/index.js';
@@ -27,6 +27,10 @@ app.get('/protected', passport.authenticate('jwt', { session: false }), (req, re
   res.send('nice');
 });
 
-app.listen(port, () => {
-  console.log(`ShareBin listening at http://localhost:${port}`);
+db.connection.on('connected', () => {
+  app.listen(port, () => {
+    console.log(`ShareBin listening at http://localhost:${port}`);
+  });
 });
+export { db };
+export default app;

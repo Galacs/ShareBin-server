@@ -45,3 +45,5 @@ mongoose.connect('mongodb+srv://test:test@cluster0.q5nyt.mongodb.net/passport-lo
 mongoose.connection.on('connected', () => {
   console.log('Database connected');
 });
+
+export default mongoose;
