@@ -35,10 +35,7 @@ router.get('/:key', async (req, res) => {
         'Content-Length': data.ContentLength,
       });
     }
-    res.on('close', () => {
-      console.log('closed');
-      data.Body.destroy();
-    });
+    res.on('close', () => data.Body.destroy());
     data.Body.pipe(res);
   } catch (error) {
     return res.status(404).json({ success: false, msg: 'Not found' });
