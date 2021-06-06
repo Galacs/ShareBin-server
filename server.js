@@ -36,9 +36,11 @@ app.get('/user-protected/:userid', passport.authenticate('jwt', { session: false
 });
 
 db.connection.on('connected', () => {
-  app.listen(port, () => {
-    console.log(`ShareBin listening at http://localhost:${port}`);
-  });
+  if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => {
+      console.log(`ShareBin listening at http://localhost:${port}`);
+    });
+  }
 });
 export { db };
 export default app;

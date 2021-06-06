@@ -3,7 +3,7 @@ import supertest from 'supertest';
 import app, { db } from '../server.js';
 
 afterAll(async () => {
-  db.connection.close();
+  await db.disconnect();
 });
 
 describe('Testing protection of routes', () => {

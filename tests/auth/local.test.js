@@ -1,13 +1,8 @@
 import supertest from 'supertest';
 import crypto from 'crypto';
-import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 
 import app, { db } from '../../server.js';
-
-afterAll(async () => {
-  db.connection.close();
-});
 
 describe('Testing local auth routes', () => {
   const username = crypto.randomBytes(8).toString('base64');
@@ -23,7 +18,7 @@ describe('Testing local auth routes', () => {
       })
       .expect(200, { success: true });
 
-    user = await mongoose.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
+    user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
     expect(user).toBeTruthy();
   });
 
@@ -41,19 +36,17 @@ describe('Testing local auth routes', () => {
   });
 
   it('Testing protected route', async () => {
-    // eslint-disable-next-line no-underscore-dangle
     await supertest(app).get(`/user-protected/${jwt.decode(token).sub}`)
       .set('Cookie', [`token=${token}`])
       .expect(200, 'nice');
   });
 
   it('Testing account deletion', async () => {
-    // eslint-disable-next-line no-underscore-dangle
     await supertest(app).delete('/account')
       .set('Cookie', [`token=${token}`])
       .expect(200, { success: true, msg: 'User succesfully deleted' });
 
-    user = await mongoose.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
+    user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
     expect(user).toBeFalsy();
   });
 });
