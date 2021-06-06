@@ -1,6 +1,8 @@
 import supertest from 'supertest';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import path from 'path';
 
 import app, { db } from '../../server.js';
 
@@ -32,6 +34,10 @@ describe('Testing local auth routes', () => {
           .split('=')[1].split(';')[0];
         // eslint-disable-next-line no-underscore-dangle
         expect(JSON.stringify(user._id)).toBe(JSON.stringify(jwt.decode(token).sub));
+
+        const pathToKey = path.join(path.resolve(), 'keys', 'id_rsa_pub.pem');
+        const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
+        expect(jwt.verify(token, PUB_KEY)).toBeTruthy();
       });
   });
 
