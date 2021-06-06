@@ -14,8 +14,6 @@ router.delete('/:key', async (req, res) => {
       Key: req.params.key,
     }));
     owner = owner.TagSet.find((obj) => obj.Key === 'owner').Value;
-    console.log(owner);
-    console.log(jwt.decode(req.cookies.token).sub);
     if (owner === jwt.decode(req.cookies.token).sub) {
       try {
         await client.send(new DeleteObjectCommand({
