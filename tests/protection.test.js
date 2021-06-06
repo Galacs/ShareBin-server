@@ -6,7 +6,7 @@ afterAll(async () => {
   db.connection.close();
 });
 
-describe('Testing ping routes', () => {
+describe('Testing protection of routes', () => {
   it('Testing unprotected route', async () => {
     await supertest(app).get('/unprotected')
       .expect(200, 'Gud');

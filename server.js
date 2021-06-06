@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 
 import db from './config/database.js';
 import { } from './models/user.js';
@@ -25,6 +26,13 @@ app.get('/unprotected', (req, res) => {
 
 app.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.send('nice');
+});
+
+app.get('/user-protected/:userid', passport.authenticate('jwt', { session: false }), (req, res) => {
+  if (req.params.userid === jwt.decode(req.cookies.token).sub) {
+    return res.send('nice');
+  }
+  return res.status(401).send('Unauthorized');
 });
 
 db.connection.on('connected', () => {
