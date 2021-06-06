@@ -14,10 +14,7 @@ describe('Testing local auth routes', () => {
 
   it('Testing local account creation', async () => {
     await supertest(app).post('/auth/local/register')
-      .send({
-        username,
-        password,
-      })
+      .send({ username, password })
       .expect(200, { success: true });
 
     user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
