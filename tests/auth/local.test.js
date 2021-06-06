@@ -24,6 +24,15 @@ describe('Testing local auth routes', () => {
     expect(user).toBeTruthy();
   });
 
+  it('Testing local account creation with same name', async () => {
+    await supertest(app).post('/auth/local/register')
+      .send({ username, password })
+      .expect(409, { success: false, msg: 'User already exists' });
+
+    user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
+    expect(user).toBeTruthy();
+  });
+
   it('Testing local account login', async () => {
     await supertest(app).post('/auth/local/login')
       .send({ username, password })
