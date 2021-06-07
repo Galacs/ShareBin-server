@@ -6,6 +6,10 @@ import path from 'path';
 
 import app, { db } from '../../server.js';
 
+afterAll(async () => {
+  await db.disconnect();
+});
+
 describe('Testing local auth routes', () => {
   const username = crypto.randomBytes(8).toString('base64');
   const password = crypto.randomBytes(8).toString('base64');
