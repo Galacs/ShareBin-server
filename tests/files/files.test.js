@@ -3,7 +3,9 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
+import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import app, { db } from '../../server.js';
+import client, { bucket } from '../../config/s3.js';
 
 afterAll(async () => {
   await db.disconnect();
@@ -45,15 +47,8 @@ describe('Testing local auth routes', () => {
   });
 
   it('Uploading object', async () => {
-    hash = crypto.createHash('sha256');
-    // hash.setEncoding('hex');
-    let file;
-    for (let i = 0; i < 100; i += 1) {
-      const randomBytes = crypto.randomBytes(1000 * 1000);
-      hash.write(randomBytes);
-      file += randomBytes;
-    }
-    hash.end(); hash = hash.read();
+    const file = crypto.randomBytes(3 * 10 ** 6);
+    hash = crypto.createHash('sha256').update(file).digest('hex');
 
     await supertest(app).post(`/files?filename=${filename}`)
       .set('Cookie', [`token=${token}`])
@@ -63,19 +58,34 @@ describe('Testing local auth routes', () => {
   });
 
   it('Downloading object', async () => {
-    let hashDownload = crypto.createHash('sha256');
-
+    let hashDownload;
     await supertest(app).get(`/files/${fileid}`)
       .expect(200)
-      .pipe(hash);
+      .then((res) => { hashDownload = crypto.createHash('sha256').update(res.body).digest('hex'); });
 
-    hashDownload.end();
-    hashDownload = hashDownload.read();
-    console.log(hash.toString('hex'));
-    console.log(hashDownload.toString('hex'));
+    expect(hashDownload).toBe(hash);
   });
 
-  it('Testing account deletion', async () => {
+  it('Deleting object', async () => {
+    async function keyExists(key) {
+      try {
+        await client.send(new HeadObjectCommand({
+          Bucket: bucket,
+          Key: key,
+        }));
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+    await supertest(app).delete(`/files/${fileid}`)
+      .set('Cookie', [`token=${token}`])
+      .expect(200, { success: true });
+
+    expect(await keyExists(fileid)).toBe(false);
+  });
+
+  it('Deleting account', async () => {
     await supertest(app).delete('/account')
       .set('Cookie', [`token=${token}`])
       .expect(200, { success: true, msg: 'User succesfully deleted' });
