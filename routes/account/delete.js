@@ -3,15 +3,17 @@ import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
+import { validPassword } from '../../lib/utils.js';
+
 const router = express.Router();
 const User = mongoose.model('User');
 
-// Delete a user (GPDR)
+// Delete a user
 router.delete('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   // Check if the user exists
   User.findOne({ _id: jwt.decode(req.cookies.token).sub }, {})
     .then((user) => {
-      if (user) {
+      if (user && validPassword(req.body.password, user.auth.local.hash, user.auth.local.salt)) {
         User.deleteOne(user, (err) => {
           if (err) {
             res.status(409).json({ success: false, msg: 'Error' });
@@ -20,7 +22,7 @@ router.delete('/', passport.authenticate('jwt', { session: false }), (req, res) 
           }
         });
       } else {
-        res.status(409).json({ success: false, msg: 'User does not exist' });
+        res.status(409).json({ success: false, msg: 'Unauthorized' });
       }
     });
 });
