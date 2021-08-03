@@ -47,6 +47,18 @@ describe('Testing local auth routes', () => {
   });
 
   it('Uploading object', async () => {
+    async function keyExists(key) {
+      try {
+        await client.send(new HeadObjectCommand({
+          Bucket: bucket,
+          Key: key,
+        }));
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
     const file = crypto.randomBytes(3 * 10 ** 6);
     hash = crypto.createHash('sha256').update(file).digest('hex');
 
@@ -55,6 +67,8 @@ describe('Testing local auth routes', () => {
       .send(file)
       .expect(200)
       .then((res) => { fileid = res.body.fileid; });
+
+    expect(await keyExists(fileid)).toBeTruthy();
   });
 
   it('Downloading object', async () => {
