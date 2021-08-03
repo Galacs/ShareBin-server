@@ -15,7 +15,7 @@ const router = express.Router();
 router.post('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';
-  console.log(uuid);
+  // console.log(uuid);
 
   async function keyExists(key) {
     try {
@@ -59,9 +59,9 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
       params: target,
     });
 
-    paralellUploads3.on('httpUploadProgress', (progress) => {
-      console.log(Math.round((progress.loaded / req.header('Content-Length')) * 100));
-    });
+    // paralellUploads3.on('httpUploadProgress', (progress) => {
+    //   console.log(Math.round((progress.loaded / req.header('Content-Length')) * 100));
+    // });
 
     await paralellUploads3.done();
     res.json({
