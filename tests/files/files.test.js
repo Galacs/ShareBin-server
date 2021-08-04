@@ -73,7 +73,7 @@ describe('Testing files', () => {
     const id = await db.model('User').findOne({ _id: userId }, { objects: { $elemMatch: { id: fileid, filename } } });
     expect(id.objects.id[0]).toBe(fileid);
     expect(id.objects.filename[0]).toBe(filename);
-    expect(await db.model('User').exists({ _id: userId, objects: { id: fileid, filename } })).toBeTruthy();
+    expect(await db.model('User').exists({ _id: userId, objects: { $elemMatch: { id: fileid, filename } } })).toBeTruthy();
   });
 
   it('Downloading object', async () => {
