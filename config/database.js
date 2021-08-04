@@ -37,9 +37,10 @@ import mongoose from 'mongoose';
 //   });
 // }
 
-mongoose.connect('mongodb+srv://test:test@cluster0.q5nyt.mongodb.net/passport-local', {
+mongoose.connect('mongodb+srv://test:test@cluster0.q5nyt.mongodb.net/ShareBin-dev', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 
 mongoose.connection.on('connected', () => {
