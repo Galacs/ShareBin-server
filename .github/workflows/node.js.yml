@@ -20,6 +20,9 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+    - run: wget https://dl.min.io/server/minio/release/linux-amd64/minio
+    - run: chmod +x minio
+    - run: ./minio server /data
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
