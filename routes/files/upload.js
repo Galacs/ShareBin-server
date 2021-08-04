@@ -67,7 +67,11 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 
     await paralellUploads3.done();
 
-    await User.findOneAndUpdate({ _id: userId }, { $push: { objects: uuid } });
+    // eslint-disable-next-line max-len
+    await User.findOneAndUpdate({ _id: userId }, { $push: { objects: { id: uuid, filename: req.query.filename } } });
+    await User.findOneAndUpdate({ _id: userId }, { $push: { objects: { id: 'bonsoir', filename: 'salutatous' } } });
+    await User.findOneAndUpdate({ _id: userId }, { $push: { objects: { id: 'bonsoir', filename: 'salutatous' } } });
+    await User.findOneAndUpdate({ _id: userId }, { $push: { objects: { id: 'bonsoir', filename: 'salutatous' } } });
 
     res.json({
       success: true,

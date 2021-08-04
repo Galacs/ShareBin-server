@@ -23,7 +23,7 @@ router.delete('/:key', async (req, res) => {
           Key: req.params.key,
         }));
 
-        await User.updateOne({ _id: owner }, { $pull: { objects: req.params.key } });
+        await User.updateOne({ _id: owner }, { $pull: { objects: { id: req.params.key } } });
 
         return res.status(200).json({ success: true });
       } catch (error) {

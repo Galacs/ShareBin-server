@@ -70,10 +70,10 @@ describe('Testing files', () => {
       .then((res) => { fileid = res.body.fileid; });
 
     expect(await keyExists(fileid)).toBeTruthy();
-    const id = await db.model('User').findOne({ _id: userId }, { objects: 1 });
-
-    expect(id.objects.find((obj) => obj === fileid)).toBe(fileid);
-    expect(await db.model('User').exists({ _id: userId, objects: fileid })).toBeTruthy();
+    const id = await db.model('User').findOne({ _id: userId }, { objects: { $elemMatch: { id: fileid, filename } } });
+    expect(id.objects.id[0]).toBe(fileid);
+    expect(id.objects.filename[0]).toBe(filename);
+    expect(await db.model('User').exists({ _id: userId, objects: { id: fileid, filename } })).toBeTruthy();
   });
 
   it('Downloading object', async () => {
@@ -102,10 +102,9 @@ describe('Testing files', () => {
       .set('Cookie', [`token=${token}`])
       .expect(200, { success: true });
 
-    const id = await db.model('User').findOne({ _id: userId }, { objects: 1 });
-
+    const id = await db.model('User').findOne({ _id: userId }, { objects: { $elemMatch: { id: fileid, filename } } });
+    expect(id.objects).toMatchObject({});
     expect(await keyExists(fileid)).toBe(false);
-    expect(id.objects.find((obj) => obj === fileid)).toBeFalsy();
   });
 
   it('Deleting account', async () => {

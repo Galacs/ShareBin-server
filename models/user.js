@@ -8,7 +8,10 @@ const UserSchema = new mongoose.Schema({
       salt: String,
     },
   },
-  objects: [String],
+  objects: {
+    id: String,
+    filename: String,
+  },
 });
 
 mongoose.model('User', UserSchema);
