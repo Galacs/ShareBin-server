@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
       salt: String,
     },
   },
+  objects: [String],
 });
 
 mongoose.model('User', UserSchema);

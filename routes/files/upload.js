@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import crypto from 'crypto';
+import mongoose from 'mongoose';
 
 import jwt from 'jsonwebtoken';
 
@@ -11,6 +12,7 @@ import { encode } from '../../lib/base64url.js';
 import client, { bucket } from '../../config/s3.js';
 
 const router = express.Router();
+const User = mongoose.model('User');
 
 router.post('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
   let uuid = encode(crypto.randomBytes(16));
@@ -64,6 +66,9 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
     // });
 
     await paralellUploads3.done();
+
+    await User.findOneAndUpdate({ _id: userId }, { $push: { objects: uuid } });
+
     res.json({
       success: true,
       fileid: uuid,

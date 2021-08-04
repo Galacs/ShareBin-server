@@ -11,7 +11,7 @@ afterAll(async () => {
   await db.disconnect();
 });
 
-describe('Testing local auth routes', () => {
+describe('Testing files', () => {
   const username = crypto.randomBytes(8).toString('base64');
   const password = crypto.randomBytes(8).toString('base64');
   const filename = crypto.randomBytes(8).toString('base64');
@@ -61,6 +61,7 @@ describe('Testing local auth routes', () => {
 
     const file = crypto.randomBytes(3 * 10 ** 6);
     hash = crypto.createHash('sha256').update(file).digest('hex');
+    const userId = jwt.decode(token).sub;
 
     await supertest(app).post(`/files?filename=${filename}`)
       .set('Cookie', [`token=${token}`])
@@ -69,6 +70,10 @@ describe('Testing local auth routes', () => {
       .then((res) => { fileid = res.body.fileid; });
 
     expect(await keyExists(fileid)).toBeTruthy();
+    const id = await db.model('User').findOne({ _id: userId }, { objects: 1 });
+
+    expect(id.objects.find((obj) => obj === fileid)).toBe(fileid);
+    expect(await db.model('User').exists({ _id: userId, objects: fileid })).toBeTruthy();
   });
 
   it('Downloading object', async () => {
@@ -81,6 +86,7 @@ describe('Testing local auth routes', () => {
   });
 
   it('Deleting object', async () => {
+    const userId = jwt.decode(token).sub;
     async function keyExists(key) {
       try {
         await client.send(new HeadObjectCommand({
@@ -96,12 +102,16 @@ describe('Testing local auth routes', () => {
       .set('Cookie', [`token=${token}`])
       .expect(200, { success: true });
 
+    const id = await db.model('User').findOne({ _id: userId }, { objects: 1 });
+
     expect(await keyExists(fileid)).toBe(false);
+    expect(id.objects.find((obj) => obj === fileid)).toBeFalsy();
   });
 
   it('Deleting account', async () => {
     await supertest(app).delete('/account')
       .set('Cookie', [`token=${token}`])
+      .send({ password })
       .expect(200, { success: true, msg: 'User succesfully deleted' });
 
     user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
