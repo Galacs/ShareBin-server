@@ -60,6 +60,7 @@ describe('Testing local auth routes', () => {
   it('Testing account deletion', async () => {
     await supertest(app).delete('/account')
       .set('Cookie', [`token=${token}`])
+      .send({ password })
       .expect(200, { success: true, msg: 'User succesfully deleted' });
 
     user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
