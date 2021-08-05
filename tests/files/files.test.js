@@ -70,8 +70,7 @@ describe('Testing files', () => {
     const file = crypto.randomBytes(3 * 10 ** 6);
     hash = crypto.createHash('sha256').update(file).digest('hex');
     const userId = jwt.decode(token).sub;
-
-    await supertest(app).post(`/files?filename=${filename}`)
+    await supertest(app).post(`/files?filename=${filename}&expiration=${Math.floor(new Date().getTime() / 1000 + 10000000)}`)
       .set('Cookie', [`token=${token}`])
       .send(file)
       .expect(200)
