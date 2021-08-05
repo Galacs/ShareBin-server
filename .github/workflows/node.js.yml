@@ -18,6 +18,11 @@ jobs:
       # matrix:
         # node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    services:
+      minio:
+       image: fclairamb/minio-github-actions
+       ports:
+        - 9000:9000
 
     steps:
     - run: wget https://dl.min.io/server/minio/release/linux-amd64/minio
