@@ -3,13 +3,21 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
-import { HeadObjectCommand } from '@aws-sdk/client-s3';
+import { HeadObjectCommand, CreateBucketCommand } from '@aws-sdk/client-s3';
 import app, { db } from '../../server.js';
 import client, { bucket } from '../../config/s3.js';
 
 afterAll(async () => {
   await db.disconnect();
 });
+
+async function createBucket() {
+  try {
+    await client.send(new CreateBucketCommand({ Bucket: bucket }));
+  // eslint-disable-next-line no-empty
+  } catch (error) { }
+}
+createBucket();
 
 describe('Testing files', () => {
   const username = crypto.randomBytes(8).toString('base64');
