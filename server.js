@@ -3,13 +3,11 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { CreateBucketCommand } from '@aws-sdk/client-s3';
 
 import db from './config/database.js';
-import routes from './routes/index.js';
 import { } from './models/user.js';
 import configPassport from './config/passport.js';
-import client, { bucket } from './config/s3.js';
+import routes from './routes/index.js';
 
 configPassport(passport);
 
@@ -21,15 +19,6 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use(routes);
-
-async function createBucket() {
-  try {
-    await client.send(new CreateBucketCommand({ Bucket: bucket }));
-  } catch (error) {
-    console.log('error caught');
-  }
-}
-createBucket();
 
 app.get('/unprotected', (req, res) => {
   res.send('Gud');
