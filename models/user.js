@@ -11,7 +11,8 @@ const UserSchema = new mongoose.Schema({
   objects: {
     id: String,
     filename: String,
-    date: String,
+    uploadDate: Date,
+    expirationDate: Date,
   },
 });
 

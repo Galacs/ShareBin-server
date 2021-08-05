@@ -67,6 +67,8 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 
     await paralellUploads3.done();
 
+    const expirationDate = new Date(req.query.expiration * 1000);
+
     // eslint-disable-next-line max-len
     await User.findOneAndUpdate({ _id: userId }, {
       $push: {
@@ -74,7 +76,8 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
           id: uuid,
           filename: req.query.filename,
           // eslint-disable-next-line new-cap
-          date: new Date(),
+          uploadDate: new Date(),
+          expirationDate,
         },
       },
     });
