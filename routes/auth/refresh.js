@@ -10,7 +10,7 @@ const User = mongoose.model('User');
 // Validate an existing user and issue a JWT
 router.get('/', async (req, res, next) => {
   try {
-    if (!req.cookies.refreshToken) return res.status(401).json({ msg: 'No refresh token' });
+    if (!req.cookies.refreshToken) return res.status(401).send('Unauthorized');
     if (!jwt.verify(res.cookies.refreshToken)) return res.status(401).json({ msg: 'Expired refresh token' });
 
     return res.status(403).json({ msg: 'No refresh token' });
