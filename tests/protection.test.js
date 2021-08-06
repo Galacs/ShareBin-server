@@ -13,6 +13,6 @@ describe('Testing protection of routes', () => {
   });
   it('Testing protected route', async () => {
     await supertest(app).get('/protected')
-      .expect(401, 'Unauthorized');
+      .expect(302);
   });
 });

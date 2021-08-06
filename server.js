@@ -24,7 +24,7 @@ app.get('/unprotected', (req, res) => {
   res.send('Gud');
 });
 
-app.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/protected', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), (req, res) => {
   res.send('nice');
 });
 

@@ -17,12 +17,24 @@ router.post('/login', (req, res, next) => {
       const isValid = validPassword(req.body.password, user.auth.local.hash, user.auth.local.salt);
       if (isValid) {
         const tokenObject = issueJWT(user);
+        const refreshTokenObject = issueJWT(user, '31d', 2);
 
         // Create new Date instance
         const date = new Date();
-        // Add a day
-        date.setDate(date.getDate() + 1);
+        // Add time
+        const minutes = 15;
+        date.setMinutes(date.getMinutes() + minutes);
 
+        // Create new Date instance
+        const refreshDate = new Date();
+        // Add time
+        refreshDate.setMonth(date.getMonth() + 1);
+
+        res.cookie('refreshToken', refreshTokenObject.token, {
+          expires: refreshDate,
+          secure: false,
+          httpOnly: true,
+        });
         res.cookie('token', tokenObject.token, {
           expires: date,
           secure: false,
