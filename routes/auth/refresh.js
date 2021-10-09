@@ -38,10 +38,12 @@ router.get('/', async (req, res, next) => {
       secure: false,
       httpOnly: true,
     });
+    res.clearCookie('refreshToken');
     res.cookie('refreshToken', refreshTokenObject.token, {
       expires: refreshDate,
       secure: false,
       httpOnly: true,
+      path: '/auth/refresh',
     });
     // res.status(200).json({ success: true });
     res.redirect('back');
