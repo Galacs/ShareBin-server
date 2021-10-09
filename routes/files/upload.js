@@ -14,7 +14,7 @@ import client, { bucket } from '../../config/s3.js';
 const router = express.Router();
 const User = mongoose.model('User');
 
-router.post('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), async (req, res) => {
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';
   // console.log(uuid);

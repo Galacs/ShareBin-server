@@ -28,7 +28,7 @@ app.get('/protected', passport.authenticate('jwt', { session: false, failureRedi
   res.send('nice');
 });
 
-app.get('/user-protected/:userid', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/user-protected/:userid', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), (req, res) => {
   if (req.params.userid === jwt.decode(req.cookies.token).sub) {
     return res.send('nice');
   }

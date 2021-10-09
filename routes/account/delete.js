@@ -9,7 +9,7 @@ const router = express.Router();
 const User = mongoose.model('User');
 
 // Delete a user
-router.delete('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.delete('/', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), (req, res) => {
   // Check if the user exists
   User.findOne({ _id: jwt.decode(req.cookies.token).sub }, {})
     .then((user) => {
