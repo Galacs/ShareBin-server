@@ -68,7 +68,7 @@ describe('Testing files', () => {
     }
 
     const file = crypto.randomBytes(3 * 10 ** 6);
-    hash = crypto.createHash('sha256').update(file).digest('hex');
+    hash = crypto.createHash('sha256').update(file.toString()).digest('hex');
     const userId = jwt.decode(token).sub;
     await supertest(app).post(`/files?filename=${filename}&expiration=${Math.floor(new Date().getTime() / 1000 + 10000000)}`)
       .set('Cookie', [`token=${token}`])
@@ -77,7 +77,11 @@ describe('Testing files', () => {
       .then((res) => { fileid = res.body.fileid; });
 
     expect(await keyExists(fileid)).toBeTruthy();
-    const id = await db.model('User').findOne({ _id: userId }, { objects: { $elemMatch: { id: fileid, filename } } });
+    let id;
+    do {
+      // eslint-disable-next-line no-await-in-loop
+      id = await db.model('User').findOne({ _id: userId }, { objects: { $elemMatch: { id: fileid, filename } } });
+    } while (!id.objects.id);
     expect(id.objects.id[0]).toBe(fileid);
     expect(id.objects.filename[0]).toBe(filename);
     expect(await db.model('User').exists({ _id: userId, objects: { $elemMatch: { id: fileid, filename } } })).toBeTruthy();
@@ -87,7 +91,7 @@ describe('Testing files', () => {
     let hashDownload;
     await supertest(app).get(`/files/${fileid}`)
       .expect(200)
-      .then((res) => { hashDownload = crypto.createHash('sha256').update(res.body).digest('hex'); });
+      .then((res) => { hashDownload = crypto.createHash('sha256').update(res.body.toString()).digest('hex'); });
 
     expect(hashDownload).toBe(hash);
   });
