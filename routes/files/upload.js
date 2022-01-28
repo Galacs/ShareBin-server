@@ -15,7 +15,7 @@ const router = express.Router();
 const User = mongoose.model('User');
 
 router.post('/', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), async (req, res) => {
-  if (req.req.query.filename === '') return res.json({ success: false, msg: 'empty file error' });
+  if (req.query.filename === '') return res.json({ success: false, msg: 'empty file' });
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';
   // console.log(uuid);
