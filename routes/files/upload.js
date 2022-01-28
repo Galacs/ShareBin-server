@@ -86,7 +86,7 @@ router.post('/', passport.authenticate('jwt', { session: false, failureRedirect:
     res.json({
       success: true,
       fileid: uuid,
-      url: `${process.env.URL || 'localhost:1500'}/files/${uuid}`,
+      url: `${process.env.URL || 'http://localhost:1500'}/files/${uuid}`,
     });
   } catch (e) {
     res.json({ success: false, msg: e });
