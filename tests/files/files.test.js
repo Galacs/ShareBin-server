@@ -40,7 +40,7 @@ describe('Testing files', () => {
   it('Logging into account and storing token', async () => {
     await supertest(app).post('/auth/local/login')
       .send({ username, password })
-      .expect(200, { success: true })
+      .expect(200, { success: true, username })
       .expect(async (res) => {
         // eslint-disable-next-line prefer-destructuring
         token = res.headers['set-cookie'].find((obj) => obj.startsWith('token'))
@@ -70,7 +70,7 @@ describe('Testing files', () => {
     const file = crypto.randomBytes(3 * 10 ** 6);
     hash = crypto.createHash('sha256').update(file.toString()).digest('hex');
     const userId = jwt.decode(token).sub;
-    await supertest(app).post(`/files?filename=${filename}&expiration=${Math.floor(new Date().getTime() / 1000 + 10000000)}`)
+    await supertest(app).post(`/files?filename=${encodeURI(filename)}&expiration=${Math.floor(new Date().getTime() / 1000 + 10000000)}`)
       .set('Cookie', [`token=${token}`])
       .send(file)
       .expect(200)

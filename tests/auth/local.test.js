@@ -37,7 +37,7 @@ describe('Testing local auth routes', () => {
   it('Testing local account login', async () => {
     await supertest(app).post('/auth/local/login')
       .send({ username, password })
-      .expect(200, { success: true })
+      .expect(200, { success: true, username })
       .expect(async (res) => {
         // eslint-disable-next-line prefer-destructuring
         token = res.headers['set-cookie'].find((obj) => obj.startsWith('token'))
