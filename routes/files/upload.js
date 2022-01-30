@@ -19,7 +19,7 @@ router.post('/', passport.authenticate('jwt', { session: false, failureRedirect:
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';
   // console.log(uuid);
-
+  req.query.filename = decodeURI(req.query.filename);
   async function keyExists(key) {
     try {
       await client.send(new HeadObjectCommand({
