@@ -40,7 +40,7 @@ router.post('/login', (req, res, next) => {
           secure: false,
           httpOnly: true,
         });
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true, username: req.body.username });
       } else {
         res.status(401).json({ success: false, msg: 'you have entered the wrong password' });
       }
