@@ -34,6 +34,7 @@ router.post('/login', (req, res, next) => {
           expires: refreshDate,
           secure: false,
           httpOnly: true,
+          path: '/auth/refresh',
         });
         res.cookie('token', tokenObject.token, {
           expires: date,
