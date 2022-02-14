@@ -8,7 +8,7 @@ const User = mongoose.model('User');
 
 const fileIds = [];
 
-// Trouve les fichiers expiré est les met dans fileIds
+// Trouve les fichiers expirés et les mets dans fileIds
 db.connection.on('connected', () => {
   User.aggregate([
     // { $project: { 'objects.id': 1, 'objects.expirationDate': 1 } },
