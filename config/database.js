@@ -1,4 +1,6 @@
-import mongoose from 'mongoose';
+import { Sequelize } from 'sequelize';
+
+const sequelize = new Sequelize('postgres://root:root@localhost:5432/dev_db', { define: { timestamps: false } });
 
 /**
  * -------------- DATABASE ----------------
@@ -37,10 +39,10 @@ import mongoose from 'mongoose';
 //   });
 // }
 
-mongoose.connect('mongodb+srv://test:test@cluster0.q5nyt.mongodb.net/ShareBin-dev');
+// mongoose.connect('mongodb+srv://test:test@cluster0.q5nyt.mongodb.net/ShareBin-dev');
 
-mongoose.connection.on('connected', () => {
-  // console.log('Database connected');
-});
+// mongoose.connection.on('connected', () => {
+//   // console.log('Database connected');
+// });
 
-export default mongoose;
+export default sequelize;

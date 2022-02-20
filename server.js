@@ -5,8 +5,10 @@ import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
-import db from './config/database.js';
+// import db from './config/database.js';
+import sequelize from './config/database.js';
 import { } from './models/user.js';
+import { } from './models/auth-local.js';
 import configPassport from './config/passport.js';
 import routes from './routes/index.js';
 
@@ -44,12 +46,27 @@ app.get('/user-protected/:userid', passport.authenticate('jwt', { session: false
   return res.status(401).send('Unauthorized');
 });
 
-db.connection.on('connected', () => {
+// db.connection.on('connected', () => {
+//   if (process.env.NODE_ENV !== 'test') {
+//     app.listen(port, () => {
+//       console.log(`ShareBin listening at http://localhost:${port}`);
+//     });
+//   }
+// });
+
+try {
+  sequelize.authenticate();
+  console.log('Connection has been established successfully.');
+  console.log(sequelize.query('DROP TABLE *;'));
+  sequelize.sync({ force: true });
   if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {
       console.log(`ShareBin listening at http://localhost:${port}`);
     });
   }
-});
-export { db };
+} catch (error) {
+  console.error('Unable to connect to the database:', error);
+}
+
+// export { db };
 export default app;
