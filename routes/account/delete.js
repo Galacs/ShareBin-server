@@ -1,30 +1,29 @@
-import mongoose from 'mongoose';
 import express from 'express';
-import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
 import { validPassword } from '../../lib/utils.js';
+import pool from '../../config/database.js';
+import authenticateJWT from '../../config/authenticateJWT.js';
 
 const router = express.Router();
-const User = mongoose.model('User');
 
 // Delete a user
-router.delete('/', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), (req, res) => {
-  // Check if the user exists
-  User.findOne({ _id: jwt.decode(req.cookies.token).sub }, {})
-    .then((user) => {
-      if (user && validPassword(req.body.password, user.auth.local.hash, user.auth.local.salt)) {
-        User.deleteOne(user, (err) => {
-          if (err) {
-            res.status(409).json({ success: false, msg: 'Error' });
-          } else {
-            res.status(200).json({ success: true, msg: 'User succesfully deleted' });
-          }
-        });
-      } else {
-        res.status(409).json({ success: false, msg: 'Unauthorized' });
-      }
-    });
+router.delete('/', authenticateJWT, async (req, res) => {
+  try {
+    const data = await pool.query('SELECT * FROM auth.local WHERE userid = $1', [jwt.decode(req.cookies.token).sub]);
+    if (data.rows.length === 0) {
+      return res.status(401).json({ success: false, msg: 'could not find user' });
+    }
+    if (validPassword(req.body.password, data.rows[0].password, data.rows[0].salt)) {
+      await pool.query('DELETE FROM users WHERE userid = $1', [jwt.decode(req.cookies.token).sub]);
+      res.status(200).json({ success: true, msg: 'User succesfully deleted' });
+    } else {
+      res.status(409).json({ success: false, msg: 'Unauthorized' });
+    }
+  } catch (e) {
+    console.log(e);
+    res.json({ success: false });
+  }
 });
 
 export default router;
