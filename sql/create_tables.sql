@@ -2,11 +2,11 @@
 CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE TABLE IF NOT EXISTS users (
-	userid bytea PRIMARY KEY
+	userid varchar PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS auth.local (
-	userid bytea PRIMARY KEY,
+	userid varchar PRIMARY KEY,
 	FOREIGN KEY (userid)
 		REFERENCES users (userid) ON DELETE CASCADE,
 	username varchar UNIQUE,
@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS auth.local (
 );
 
 CREATE TABLE IF NOT EXISTS files (
-	fileid bytea PRIMARY KEY,
-	ownerid bytea,
+	fileid varchar PRIMARY KEY,
+	ownerid varchar,
 	FOREIGN KEY (ownerid)
 		REFERENCES users (userid),
 	filename varchar,
