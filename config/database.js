@@ -1,48 +1,39 @@
-import { Sequelize } from 'sequelize';
+import fs from 'fs';
+import pkg from 'pg';
 
-const sequelize = new Sequelize('postgres://root:root@localhost:5432/dev_db', { define: { timestamps: false } });
+const { Pool } = pkg;
 
-/**
- * -------------- DATABASE ----------------
- */
+const dbCreatePool = new Pool({
+  host: 'localhost',
+  user: 'root',
+  password: 'root',
+  database: 'postgres',
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
-/**
- * Connect to MongoDB Server using the connection string in the `.env` file.
- * To implement this, place the following
- * string into the `.env` file
- *
- * DB_STRING=mongodb://<user>:<password>@localhost:27017/database_name
- * DB_STRING_PROD=<your production database string>
- */
+dbCreatePool.query('CREATE DATABASE sharebin')
+  .catch((e) => {
+    if (e.code !== '42P04') {
+      console.log(e);
+    }
+  });
 
-// const devConnection = process.env.DB_STRING;
-// const prodConnection = process.env.DB_STRING_PROD;
+dbCreatePool.end();
 
-// // Connect to the correct environment database
-// if (process.env.NODE_ENV === 'production') {
-//   mongoose.connect(prodConnection, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   });
+const pool = new Pool({
+  host: 'localhost',
+  user: 'root',
+  password: 'root',
+  database: 'sharebin',
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
-//   mongoose.connection.on('connected', () => {
-//     console.log('Database connected');
-//   });
-// } else {
-//   mongoose.connect(devConnection, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   });
+const sql = fs.readFileSync('sql/create_tables.sql').toString();
 
-//   mongoose.connection.on('connected', () => {
-//     console.log('Database connected');
-//   });
-// }
+pool.query(sql);
 
-// mongoose.connect('mongodb+srv://test:test@cluster0.q5nyt.mongodb.net/ShareBin-dev');
-
-// mongoose.connection.on('connected', () => {
-//   // console.log('Database connected');
-// });
-
-export default sequelize;
+export default pool;

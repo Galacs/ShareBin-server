@@ -5,8 +5,7 @@ import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
-// import db from './config/database.js';
-import sequelize from './config/database.js';
+import { } from './config/database.js';
 import { } from './models/user.js';
 import { } from './models/auth-local.js';
 import configPassport from './config/passport.js';
@@ -55,10 +54,6 @@ app.get('/user-protected/:userid', passport.authenticate('jwt', { session: false
 // });
 
 try {
-  sequelize.authenticate();
-  console.log('Connection has been established successfully.');
-  console.log(sequelize.query('DROP TABLE *;'));
-  sequelize.sync({ force: true });
   if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {
       console.log(`ShareBin listening at http://localhost:${port}`);
