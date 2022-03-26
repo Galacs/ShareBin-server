@@ -68,8 +68,10 @@ router.post('/', authenticateJWT, async (req, res) => {
 
     const expirationDate = new Date(req.query.expiration * 1000);
 
-    await pool.query('INSERT INTO files(fileid, ownerid, filename, expiration) VALUES ($1, $2, $3, $4)',
-      [uuid, userId, req.query.filename, expirationDate]);
+    await pool.query(
+      'INSERT INTO files(fileid, ownerid, filename, expiration) VALUES ($1, $2, $3, $4)',
+      [uuid, userId, req.query.filename, expirationDate],
+    );
 
     res.json({
       success: true,
