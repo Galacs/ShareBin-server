@@ -3,15 +3,13 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
 
-import { } from './config/database.js';
+import pool from './config/database.js';
 import { } from './models/user.js';
 import { } from './models/auth-local.js';
 import configPassport from './config/passport.js';
 import routes from './routes/index.js';
-
-const User = mongoose.model('User');
+import authenticateJWT from './config/authenticateJWT.js';
 
 configPassport(passport);
 
@@ -31,14 +29,15 @@ app.get('/unprotected', (req, res) => {
   res.send('Gud');
 });
 
-app.get('/protected', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), (req, res) => {
-  User.findOne({ _id: jwt.decode(req.cookies.token).sub })
-    .then((user) => {
-      res.status(200).send({ success: true, username: user.auth.local.username });
-    });
+app.get('/protected', authenticateJWT, async (req, res) => {
+  const data = await pool.query('SELECT * FROM auth.local WHERE userid = $1', [jwt.decode(req.cookies.token).sub]);
+  if (data.rows.length === 0) {
+    return res.status(401).json({ success: false, msg: 'could not find user' });
+  }
+  res.status(200).send({ success: true, username: data.rows[0].username });
 });
 
-app.get('/user-protected/:userid', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), (req, res) => {
+app.get('/user-protected/:userid', authenticateJWT, (req, res) => {
   if (req.params.userid === jwt.decode(req.cookies.token).sub) {
     return res.send('nice');
   }
