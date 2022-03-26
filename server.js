@@ -4,8 +4,6 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 
 import pool from './config/database.js';
-import { } from './models/user.js';
-import { } from './models/auth-local.js';
 import routes from './routes/index.js';
 import authenticateJWT from './config/authenticateJWT.js';
 
