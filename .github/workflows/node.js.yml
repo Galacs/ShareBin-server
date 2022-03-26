@@ -6,7 +6,7 @@ name: Tests
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     
@@ -20,6 +20,7 @@ jobs:
         ports:
           - 5432:5432
         env:
+          POSTGRES_USER: root
           POSTGRES_PASSWORD: root
         options: >-
           --health-cmd pg_isready
