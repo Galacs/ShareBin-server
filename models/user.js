@@ -1,13 +1,13 @@
-import { DataTypes } from 'sequelize';
+// import { DataTypes } from 'sequelize';
 
-import sequelize from '../config/database.js';
+// import sequelize from '../config/database.js';
 
-const User = sequelize.define('user', {
-  userid: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-  },
-});
+// const User = sequelize.define('user', {
+//   userid: {
+//     type: DataTypes.STRING,
+//     primaryKey: true,
+//   },
+// });
 
 import mongoose from 'mongoose';
 
