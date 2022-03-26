@@ -1,18 +1,17 @@
 import express from 'express';
 import passport from 'passport';
 import crypto from 'crypto';
-import mongoose from 'mongoose';
 
 import jwt from 'jsonwebtoken';
 
 import { Upload } from '@aws-sdk/lib-storage';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import { encode } from '../../lib/base64url.js';
+import pool from '../../config/database.js';
 
 import client, { bucket } from '../../config/s3.js';
 
 const router = express.Router();
-const User = mongoose.model('User');
 
 router.post('/', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), async (req, res) => {
   if (req.query.filename === '') return res.json({ success: false, msg: 'empty file' });
@@ -70,18 +69,8 @@ router.post('/', passport.authenticate('jwt', { session: false, failureRedirect:
 
     const expirationDate = new Date(req.query.expiration * 1000);
 
-    // eslint-disable-next-line max-len
-    await User.findOneAndUpdate({ _id: userId }, {
-      $push: {
-        objects: {
-          id: uuid,
-          filename: req.query.filename,
-          // eslint-disable-next-line new-cap
-          uploadDate: new Date(),
-          expirationDate,
-        },
-      },
-    });
+    await pool.query('INSERT INTO files(fileid, ownerid, filename, expiration) VALUES ($1, $2, $3, $4)',
+      [uuid, userId, req.query.filename, expirationDate]);
 
     res.json({
       success: true,

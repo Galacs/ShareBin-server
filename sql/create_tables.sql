@@ -13,3 +13,13 @@ CREATE TABLE IF NOT EXISTS auth.local (
 	salt varchar,
 	password varchar
 );
+
+CREATE TABLE IF NOT EXISTS files (
+	fileid bytea PRIMARY KEY,
+	ownerid bytea,
+	FOREIGN KEY (ownerid)
+		REFERENCES users (userid),
+	filename varchar,
+	upload DATE NOT NULL DEFAULT CURRENT_DATE,
+	expiration DATE
+);
