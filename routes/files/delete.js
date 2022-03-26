@@ -1,15 +1,14 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
-
 import { DeleteObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3';
 
 import client, { bucket } from '../../config/s3.js';
+import pool from '../../config/database.js';
+import authenticateJWT from '../../config/authenticateJWT.js';
 
 const router = express.Router();
-const User = mongoose.model('User');
 
-router.delete('/:key', async (req, res) => {
+router.delete('/:key', authenticateJWT, async (req, res) => {
   try {
     let owner = await client.send(new GetObjectTaggingCommand({
       Bucket: bucket,
@@ -23,7 +22,7 @@ router.delete('/:key', async (req, res) => {
           Key: req.params.key,
         }));
 
-        await User.updateOne({ _id: owner }, { $pull: { objects: { id: req.params.key } } });
+        await pool.query('DELETE FROM files WHERE fileid = $1', [req.params.key]);
 
         return res.status(200).json({ success: true });
       } catch (error) {
