@@ -1,9 +1,8 @@
 import passportJwt from 'passport-jwt';
 import fs from 'fs';
 import path from 'path';
-import mongoose from 'mongoose';
 
-const User = mongoose.model('User');
+import pool from './database.js';
 
 const JwtStrategy = passportJwt.Strategy;
 
@@ -20,15 +19,14 @@ export default function configPassport(passport) {
   passport.use(
     new JwtStrategy(options, (jwtPayload, done) => {
       // We will assign the `sub` property on the JWT to the database ID of user
-      User.findOne({ _id: jwtPayload.sub }, (err, user) => {
-        if (err) {
-          return done(err, false);
-        }
-        if (user) {
-          return done(null, user);
-        }
-        return done(null, false);
-      });
+      console.log('hit');
+      done(null, true);
+      // try {
+      //   const data = pool.query('SELECT * FROM auth.local WHERE userid = $1', [jwtPayload.sub]);
+      //   return done(null, false);
+      // } catch (e) {
+      //   return done(e, false);
+      // }
     }),
   );
 }
