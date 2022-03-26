@@ -1,5 +1,4 @@
 import express from 'express';
-import passport from 'passport';
 import crypto from 'crypto';
 
 import jwt from 'jsonwebtoken';
@@ -8,12 +7,12 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import { encode } from '../../lib/base64url.js';
 import pool from '../../config/database.js';
-
+import authenticateJWT from '../../config/authenticateJWT.js';
 import client, { bucket } from '../../config/s3.js';
 
 const router = express.Router();
 
-router.post('/', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), async (req, res) => {
+router.post('/', authenticateJWT, async (req, res) => {
   if (req.query.filename === '') return res.json({ success: false, msg: 'empty file' });
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';

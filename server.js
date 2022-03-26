@@ -1,17 +1,13 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
 import pool from './config/database.js';
 import { } from './models/user.js';
 import { } from './models/auth-local.js';
-import configPassport from './config/passport.js';
 import routes from './routes/index.js';
 import authenticateJWT from './config/authenticateJWT.js';
-
-configPassport(passport);
 
 const app = express();
 const port = process.env.PORT || 1500;
