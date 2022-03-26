@@ -4,12 +4,10 @@ import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 import { HeadObjectCommand, CreateBucketCommand } from '@aws-sdk/client-s3';
-import app, { db } from '../../server.js';
-import client, { bucket } from '../../config/s3.js';
 
-afterAll(async () => {
-  await db.disconnect();
-});
+import app from '../../server.js';
+import client, { bucket } from '../../config/s3.js';
+import pool from '../../config/database.js';
 
 async function createBucket() {
   try {
@@ -33,8 +31,8 @@ describe('Testing files', () => {
       .send({ username, password })
       .expect(200, { success: true });
 
-    user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
-    expect(user).toBeTruthy();
+    user = await pool.query('SELECT * FROM auth.local WHERE username = $1', [username]);
+    expect(user.rows[0]).toBeTruthy();
   });
 
   it('Logging into account and storing token', async () => {
@@ -46,7 +44,7 @@ describe('Testing files', () => {
         token = res.headers['set-cookie'].find((obj) => obj.startsWith('token'))
           .split('=')[1].split(';')[0];
         // eslint-disable-next-line no-underscore-dangle
-        expect(JSON.stringify(user._id)).toBe(JSON.stringify(jwt.decode(token).sub));
+        expect(JSON.stringify(user.rows[0].userid)).toBe(JSON.stringify(jwt.decode(token).sub));
 
         const pathToKey = path.join(path.resolve(), 'keys', 'id_rsa_pub.pem');
         const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
@@ -77,14 +75,11 @@ describe('Testing files', () => {
       .then((res) => { fileid = res.body.fileid; });
 
     expect(await keyExists(fileid)).toBeTruthy();
-    let id;
-    do {
-      // eslint-disable-next-line no-await-in-loop
-      id = await db.model('User').findOne({ _id: userId }, { objects: { $elemMatch: { id: fileid, filename } } });
-    } while (!id.objects.id);
-    expect(id.objects.id[0]).toBe(fileid);
-    expect(id.objects.filename[0]).toBe(filename);
-    expect(await db.model('User').exists({ _id: userId, objects: { $elemMatch: { id: fileid, filename } } })).toBeTruthy();
+
+    const id = await pool.query('SELECT fileid, filename FROM files WHERE ownerid = $1', [userId]);
+    expect(id.rows[0].fileid).toBe(fileid);
+    expect(id.rows[0].filename).toBe(filename);
+    expect(await pool.query('SELECT fileid, filename FROM files WHERE ownerid = $1', [userId])).toBeTruthy();
   });
 
   it('Downloading object', async () => {
@@ -113,8 +108,7 @@ describe('Testing files', () => {
       .set('Cookie', [`token=${token}`])
       .expect(200, { success: true });
 
-    const id = await db.model('User').findOne({ _id: userId }, { objects: { $elemMatch: { id: fileid, filename } } });
-    expect(id.objects).toMatchObject({});
+    expect(await pool.query('SELECT fileid, filename FROM files WHERE ownerid = $1', [userId]).rows).toBeFalsy();
     expect(await keyExists(fileid)).toBe(false);
   });
 
@@ -124,7 +118,7 @@ describe('Testing files', () => {
       .send({ password })
       .expect(200, { success: true, msg: 'User succesfully deleted' });
 
-    user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
-    expect(user).toBeFalsy();
+    user = await pool.query('SELECT * FROM auth.local WHERE username = $1', [username]);
+    expect(user.rows[0]).toBeFalsy();
   });
 });

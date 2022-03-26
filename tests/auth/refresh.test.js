@@ -4,11 +4,8 @@ import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 
-import app, { db } from '../../server.js';
-
-afterAll(async () => {
-  await db.disconnect();
-});
+import app from '../../server.js';
+import pool from '../../config/database.js';
 
 describe('Testing local auth routes', () => {
   const username = crypto.randomBytes(8).toString('base64');
@@ -22,8 +19,8 @@ describe('Testing local auth routes', () => {
       .send({ username, password })
       .expect(200, { success: true });
 
-    user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
-    expect(user).toBeTruthy();
+    user = await pool.query('SELECT * FROM auth.local WHERE username = $1', [username]);
+    expect(user.rows[0]).toBeTruthy();
   });
 
   it('Logging in', async () => {
@@ -38,7 +35,7 @@ describe('Testing local auth routes', () => {
         refreshToken = res.headers['set-cookie'].find((obj) => obj.startsWith('refreshToken'))
           .split('=')[1].split(';')[0];
         // eslint-disable-next-line no-underscore-dangle
-        expect(JSON.stringify(user._id)).toBe(JSON.stringify(jwt.decode(token).sub));
+        expect(JSON.stringify(user.rows[0].userid)).toBe(JSON.stringify(jwt.decode(token).sub));
 
         const pathToKey = path.join(path.resolve(), 'keys', 'id_rsa_pub.pem');
         const PUB_KEY = fs.readFileSync(pathToKey, 'utf8');
@@ -81,7 +78,7 @@ describe('Testing local auth routes', () => {
       .send({ password })
       .expect(200, { success: true, msg: 'User succesfully deleted' });
 
-    user = await db.model('User').findOne({ 'auth.local.username': username }, { 'auth.local': 1 });
-    expect(user).toBeFalsy();
+    user = await pool.query('SELECT * FROM auth.local WHERE username = $1', [username]);
+    expect(user.rows[0]).toBeFalsy();
   });
 });

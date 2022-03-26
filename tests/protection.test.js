@@ -1,10 +1,6 @@
 import supertest from 'supertest';
 
-import app, { db } from '../server.js';
-
-afterAll(async () => {
-  await db.disconnect();
-});
+import app from '../server.js';
 
 describe('Testing protection of routes', () => {
   it('Testing unprotected route', async () => {
