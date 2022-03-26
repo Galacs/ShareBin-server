@@ -22,7 +22,7 @@ router.get('/:key', async (req, res) => {
     if (req.header('Range')) {
       res.writeHead(206, {
         'Accept-Ranges': 'bytes',
-        // 'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `filename="${filename}"`,
         'Content-Type': mime.contentType(filename) || 'application/octet-stream',
         'Content-Range': data.ContentRange,
         'Content-Length': data.ContentLength,
@@ -30,7 +30,7 @@ router.get('/:key', async (req, res) => {
     } else {
       res.writeHead(200, {
         'Accept-Ranges': 'bytes',
-        // 'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `filename="${filename}"`,
         'Content-Type': mime.contentType(filename) || 'application/octet-stream',
         'Content-Length': data.ContentLength,
       });
