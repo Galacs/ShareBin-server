@@ -1,13 +1,12 @@
-import mongoose from 'mongoose';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
 
 import { issueJWT } from '../../lib/utils.js';
+import pool from '../../config/database.js';
 
 const router = express.Router();
-const User = mongoose.model('User');
 
 const pathToKeyRefresh = path.join(path.resolve(), 'keys', 'id_rsa_pub_refresh.pem');
 const PUB_KEY_REFRESH = fs.readFileSync(pathToKeyRefresh, 'utf8');
@@ -22,9 +21,12 @@ router.get('/', async (req, res, next) => {
   }
   try {
     const userId = jwt.decode(req.cookies.refreshToken).sub;
-    const user = await User.findOne({ _id: userId }, { 'auth.local': 1 });
-    const tokenObject = issueJWT(user);
-    const refreshTokenObject = issueJWT(user, '31d', 2);
+    const data = await pool.query('SELECT * FROM auth.local WHERE userid = $1', [userId]);
+    if (data.rows.length === 0) {
+      return res.status(401).json({ success: false, msg: 'could not find user' });
+    }
+    const tokenObject = issueJWT(data.rows[0].userid);
+    const refreshTokenObject = issueJWT(data.rows[0].userid, '31d', 2);
 
     // Create new Date instance
     const date = new Date();
