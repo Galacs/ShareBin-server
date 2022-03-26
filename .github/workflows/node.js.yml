@@ -22,7 +22,7 @@ jobs:
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
-          POSTGRES_DB: postgres
+          POSTGRES_DB: sharebin
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -47,5 +47,9 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
+          
+    - name: Import DB seed data
+      run: psql -d postgresql://postgres@localhost/sharebin -f sql/create_tables.sql
+
     - run: yarn install --frozen-lockfile
     - run: yarn test
