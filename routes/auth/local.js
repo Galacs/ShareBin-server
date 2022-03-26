@@ -15,8 +15,8 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, msg: 'could not find user' });
     }
     if (validPassword(req.body.password, data.rows[0].password, data.rows[0].salt)) {
-      const tokenObject = issueJWT(data.rows[0].password.userid);
-      const refreshTokenObject = issueJWT(data.rows[0].password.userid, '31d', 2);
+      const tokenObject = issueJWT(data.rows[0].userid);
+      const refreshTokenObject = issueJWT(data.rows[0].userid, '31d', 2);
 
       // Create new Date instance
       const date = new Date();
