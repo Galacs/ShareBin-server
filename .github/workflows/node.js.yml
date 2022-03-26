@@ -49,7 +49,7 @@ jobs:
           ${{ runner.os }}-yarn-
           
     - name: Import DB seed data
-      run: psql -d postgresql://postgres@localhost/sharebin -f sql/create_tables.sql
+      run: PGPASSWORD=root psql -d postgresql://root@localhost/sharebin -f sql/create_tables.sql
 
     - run: yarn install --frozen-lockfile
     - run: yarn test
