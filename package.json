@@ -20,7 +20,6 @@
     "jest": "^27.5.1",
     "jsonwebtoken": "^8.5.1",
     "mime-types": "^2.1.35",
-    "mongoose": "^6.2.8",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "supertest": "^6.2.2"
