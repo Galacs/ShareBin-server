@@ -1,35 +1,16 @@
-import { } from './models/user.js';
-import mongoose from 'mongoose';
 import { DeleteObjectsCommand } from '@aws-sdk/client-s3';
-import client, { bucket } from './config/s3.js';
-import db from './config/database.js';
 
-const User = mongoose.model('User');
+import client, { bucket } from './config/s3.js';
+import pool from './config/database.js';
 
 const fileIds = [];
 
-// Trouve les fichiers expiré est les met dans fileIds
-db.connection.on('connected', () => {
-  User.aggregate([
-    // { $project: { 'objects.id': 1, 'objects.expirationDate': 1 } },
-    { $match: { 'objects.expirationDate': { $gt: new Date() } } },
-    {
-      $redact: {
-        $cond: {
-          if: { $gt: ['$expirationDate', new Date()] },
-          then: '$$PRUNE',
-          else: '$$DESCEND',
-        },
-      },
-    },
-  ]).then((user) => {
-    user.forEach((element) => {
-      element.objects.forEach((obj) => fileIds.push(obj));
-    });
+pool.query('SELECT fileid FROM files where expiration < $1', [new Date()])
+  .then((data) => {
+    data.rows.forEach((obj) => fileIds.push(obj.fileid));
     if (fileIds.length === 0) process.exit();
     console.log(`${fileIds.length} fichiers vont etre supprimé`);
-    const objects = fileIds.map((object) => ({ Key: object.id }));
-    console.log(objects);
+    const objects = fileIds.map((obj) => ({ Key: obj }));
     client.send(new DeleteObjectsCommand({
       Bucket: bucket,
       Delete: {
@@ -37,15 +18,11 @@ db.connection.on('connected', () => {
         Quiet: true,
       },
     })).then(() => {
-      console.log(`${objects.length} fichiers ont était supprimé de s3`);
+      console.log(`${objects.length} fichiers ont été supprimé de s3`);
     });
-    User.updateMany(
-      { 'objects.expirationDate': { $gt: new Date() } },
-      { $pull: { objects: { $in: fileIds } } },
-      { multi: true },
-    ).then(() => {
-      console.log(`${objects.length} fichiers ont était supprimé de mongoDB`);
-      db.disconnect();
-    });
+    pool.query('DELETE FROM files where expiration < $1', [new Date()])
+      .then(() => {
+        console.log(`${objects.length} fichiers ont été supprimé de postgres`);
+        process.exit();
+      });
   });
-});
