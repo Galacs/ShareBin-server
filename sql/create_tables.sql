@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS auth.local (
 	userid bytea PRIMARY KEY,
 	FOREIGN KEY (userid)
-		REFERENCES users (userid),
+		REFERENCES users (userid) ON DELETE CASCADE,
 	username varchar UNIQUE,
 	salt varchar,
 	password varchar
