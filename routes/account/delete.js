@@ -21,6 +21,9 @@ router.delete('/', authenticateJWT, async (req, res) => {
       res.status(409).json({ success: false, msg: 'Unauthorized' });
     }
   } catch (e) {
+    if (e.code === '23503') {
+      return res.json({ success: false, msg: 'User still has files' });
+    }
     console.log(e);
     res.json({ success: false });
   }
