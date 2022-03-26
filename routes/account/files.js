@@ -1,16 +1,15 @@
-import mongoose from 'mongoose';
 import express from 'express';
-import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
-const router = express.Router();
-const User = mongoose.model('User');
+import authenticateJWT from '../../config/authenticateJWT.js';
+import pool from '../../config/database.js';
 
-router.get('/', passport.authenticate('jwt', { session: false, failureRedirect: '/auth/refresh' }), async (req, res) => {
+const router = express.Router();
+
+router.get('/', authenticateJWT, async (req, res) => {
   try {
-    const files = await User.findOne({ _id: jwt.decode(req.cookies.token).sub }, { objects: 1 });
-    // console.log(files);
-    res.status(200).json(files.objects);
+    const data = await pool.query('SELECT * FROM files WHERE ownerid = $1', [jwt.decode(req.cookies.token).sub]);
+    res.status(200).json(data.rows);
   } catch (e) {
     res.json({ success: false, msg: e });
   }
