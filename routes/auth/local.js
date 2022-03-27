@@ -4,6 +4,7 @@ import { issueJWT, genPassword, validPassword } from '../../lib/utils.js';
 import ObjectId from '../../lib/objectId.js';
 
 import pool from '../../config/database.js';
+import logger from '../../lib/logger.js';
 
 const router = express.Router();
 
@@ -47,7 +48,7 @@ router.post('/login', async (req, res) => {
       res.status(401).json({ success: false, msg: 'you have entered the wrong password' });
     }
   } catch (e) {
-    console.log(e);
+    logger.error(e);
     res.json({ success: false });
   }
 });
@@ -72,7 +73,7 @@ router.post('/register', async (req, res) => {
       await client.query('ROLLBACK');
       return res.status(409).json({ success: false, msg: 'User already exists' });
     }
-    console.log(e);
+    logger.error(e);
     return res.json({ success: false });
   } finally {
     client.release();

@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken';
 
 import { validPassword } from '../../lib/utils.js';
 import pool from '../../config/database.js';
+
 import authenticateJWT from '../../middlewares/authenticateJWT.js';
+import logger from '../../lib/logger.js';
 
 const router = express.Router();
 
@@ -24,7 +26,7 @@ router.delete('/', authenticateJWT, async (req, res) => {
     if (e.code === '23503') {
       return res.json({ success: false, msg: 'User still has files' });
     }
-    console.log(e);
+    logger.error(e);
     res.json({ success: false });
   }
 });

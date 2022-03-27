@@ -5,7 +5,11 @@ import jwt from 'jsonwebtoken';
 
 import pool from './config/database.js';
 import routes from './routes/index.js';
+
+import logger from './lib/logger.js';
+
 import authenticateJWT from './middlewares/authenticateJWT.js';
+import morganMiddleware from './middlewares/morgan.js';
 
 const app = express();
 const port = process.env.PORT || 1500;
@@ -16,6 +20,8 @@ app.use(cors({
   credentials: true,
 }));
 app.use(cookieParser());
+
+app.use(morganMiddleware);
 
 app.use(routes);
 
@@ -38,18 +44,10 @@ app.get('/user-protected/:userid', authenticateJWT, (req, res) => {
   return res.status(401).send('Unauthorized');
 });
 
-// db.connection.on('connected', () => {
-//   if (process.env.NODE_ENV !== 'test') {
-//     app.listen(port, () => {
-//       console.log(`ShareBin listening at http://localhost:${port}`);
-//     });
-//   }
-// });
-
 try {
   if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {
-      console.log(`ShareBin listening at http://localhost:${port}`);
+      logger.info(`ShareBin listening at http://localhost:${port}`);
     });
   }
 } catch (error) {

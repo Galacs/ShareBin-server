@@ -16,7 +16,6 @@ router.post('/', authenticateJWT, async (req, res) => {
   if (req.query.filename === '') return res.json({ success: false, msg: 'empty file' });
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';
-  // console.log(uuid);
   req.query.filename = decodeURI(req.query.filename);
   async function keyExists(key) {
     try {
