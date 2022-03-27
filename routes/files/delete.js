@@ -4,7 +4,7 @@ import { DeleteObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3
 
 import client, { bucket } from '../../config/s3.js';
 import pool from '../../config/database.js';
-import authenticateJWT from '../../config/authenticateJWT.js';
+import authenticateJWT from '../../middlewares/authenticateJWT.js';
 
 const router = express.Router();
 

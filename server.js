@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 import pool from './config/database.js';
 import routes from './routes/index.js';
-import authenticateJWT from './config/authenticateJWT.js';
+import authenticateJWT from './middlewares/authenticateJWT.js';
 
 const app = express();
 const port = process.env.PORT || 1500;

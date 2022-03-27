@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import { validPassword } from '../../lib/utils.js';
 import pool from '../../config/database.js';
-import authenticateJWT from '../../config/authenticateJWT.js';
+import authenticateJWT from '../../middlewares/authenticateJWT.js';
 
 const router = express.Router();
 

@@ -7,7 +7,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import { encode } from '../../lib/base64url.js';
 import pool from '../../config/database.js';
-import authenticateJWT from '../../config/authenticateJWT.js';
+import authenticateJWT from '../../middlewares/authenticateJWT.js';
 import client, { bucket } from '../../config/s3.js';
 
 const router = express.Router();
