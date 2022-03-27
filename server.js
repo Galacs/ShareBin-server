@@ -12,7 +12,7 @@ const port = process.env.PORT || 1500;
 
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'http://client.sharebin-server.ait-younes.fr:3000',
   credentials: true,
 }));
 app.use(cookieParser());

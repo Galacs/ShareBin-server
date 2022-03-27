@@ -34,11 +34,13 @@ router.post('/login', async (req, res) => {
         secure: false,
         httpOnly: true,
         path: '/auth/refresh',
+        sameSite: 'strict',
       });
       res.cookie('token', tokenObject.token, {
         expires: date,
         secure: false,
         httpOnly: true,
+        sameSite: 'strict',
       });
       res.status(200).json({ success: true, username: req.body.username });
     } else {
