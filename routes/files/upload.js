@@ -9,10 +9,12 @@ import { encode } from '../../lib/base64url.js';
 import pool from '../../config/database.js';
 import authenticateJWT from '../../middlewares/authenticateJWT.js';
 import client, { bucket } from '../../config/s3.js';
+import logger from '../../lib/logger.js';
 
 const router = express.Router();
 
 router.post('/', authenticateJWT, async (req, res) => {
+  const startTime = new Date();
   if (req.query.filename === '') return res.json({ success: false, msg: 'empty file' });
   let uuid = encode(crypto.randomBytes(16));
   // let uuid = 'salut';
@@ -35,8 +37,8 @@ router.post('/', authenticateJWT, async (req, res) => {
     // eslint-disable-next-line no-await-in-loop
     exists = await keyExists(uuid);
   }
-
   const userId = jwt.decode(req.cookies.token).sub;
+  logger.info(`File upload started: ${req.query.filename} ${uuid} ${req.get('content-length')} ${userId}`);
   const target = {
     Bucket: bucket,
     Key: uuid,
@@ -71,14 +73,19 @@ router.post('/', authenticateJWT, async (req, res) => {
       'INSERT INTO files(fileid, ownerid, filename, expiration) VALUES ($1, $2, $3, $4)',
       [uuid, userId, req.query.filename, expirationDate],
     );
-
+    logger.info(`File upload complete: ${req.query.filename} ${uuid} ${req.get('content-length')} ${userId} ${new Date() - startTime}ms`);
     res.json({
       success: true,
       fileid: uuid,
       url: `${process.env.URL || 'http://localhost:1500'}/files/${uuid}`,
     });
   } catch (e) {
-    res.json({ success: false, msg: e });
+    if (e.code === 'ECONNRESET') {
+      logger.warn(`File upload interrupted ${e}`);
+    } else {
+      logger.error(`File upload interrupted ${e}`);
+    }
+    res.json({ success: false });
   }
 });
 
