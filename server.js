@@ -43,18 +43,10 @@ app.get('/user-protected/:userid', authenticateJWT, (req, res) => {
   return res.status(401).send('Unauthorized');
 });
 
-// db.connection.on('connected', () => {
-//   if (process.env.NODE_ENV !== 'test') {
-//     app.listen(port, () => {
-//       console.log(`ShareBin listening at http://localhost:${port}`);
-//     });
-//   }
-// });
-
 try {
   if (process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {
-      console.log(`ShareBin listening at http://localhost:${port}`);
+      logger.info(`ShareBin listening at http://localhost:${port}`);
     });
   }
 } catch (error) {
