@@ -16,7 +16,7 @@ const port = process.env.PORT || 1500;
 
 app.use(express.json());
 app.use(cors({
-  origin: 'http://client.sharebin-server.ait-younes.fr:3000',
+  origin: process.env.NODE_ENV ? 'https://sharebin.ait-younes.fr' : 'http://client.sharebin-server.ait-younes.fr:3000',
   credentials: true,
 }));
 app.use(cookieParser());
