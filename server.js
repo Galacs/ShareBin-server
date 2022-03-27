@@ -5,7 +5,10 @@ import jwt from 'jsonwebtoken';
 
 import pool from './config/database.js';
 import routes from './routes/index.js';
+import logger from './lib/logger.js';
+
 import authenticateJWT from './config/authenticateJWT.js';
+import morganMiddleware from './middlewares/morgan.js';
 
 const app = express();
 const port = process.env.PORT || 1500;
@@ -16,6 +19,8 @@ app.use(cors({
   credentials: true,
 }));
 app.use(cookieParser());
+
+app.use(morganMiddleware);
 
 app.use(routes);
 
