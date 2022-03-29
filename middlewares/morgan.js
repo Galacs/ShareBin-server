@@ -16,6 +16,7 @@ const skip = () => {
 morgan.token('auth', (req) => (req.cookies.token ? 'auth' : 'noauth'));
 
 export default morgan(
-  ':remote-addr :method :url :auth :status :req[content-length] :res[content-length] - :response-time ms :user-agent',
+  process.env.NODE_ENV === 'prod' ? ':remote-addr :method :url :auth :status :req[content-length] :res[content-length] - :response-time ms :user-agent'
+    : ':remote-addr :method :url :auth :status :req[content-length] :res[content-length] - :response-time ms',
   { stream, skip },
 );
