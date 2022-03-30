@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('/', authenticateJWT, async (req, res) => {
   try {
-    const data = await pool.query('SELECT * FROM files WHERE ownerid = $1 ORDER BY upload DESC', [jwt.decode(req.cookies.token).sub]);
+    const data = await pool.query('SELECT * FROM files WHERE ownerid = $1 ORDER BY upload ASC', [jwt.decode(req.cookies.token).sub]);
     res.status(200).json(data.rows);
   } catch (e) {
     res.json({ success: false, msg: e });
