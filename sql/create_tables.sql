@@ -20,6 +20,6 @@ CREATE TABLE IF NOT EXISTS files (
 	FOREIGN KEY (ownerid)
 		REFERENCES users (userid),
 	filename varchar,
-	upload DATE NOT NULL DEFAULT CURRENT_DATE,
-	expiration DATE
+	upload TIMESTAMP NOT NULL DEFAULT CURRENT_DATE,
+	expiration TIMESTAMP
 );
