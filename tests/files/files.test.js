@@ -20,7 +20,7 @@ createBucket();
 describe('Testing files', () => {
   const username = crypto.randomBytes(8).toString('base64');
   const password = crypto.randomBytes(8).toString('base64');
-  const filename = crypto.randomBytes(8).toString('base64');
+  const filename = 'file.test';
   let user;
   let token;
   let hash;
