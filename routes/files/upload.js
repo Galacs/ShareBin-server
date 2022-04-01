@@ -70,8 +70,8 @@ router.post('/', authenticateJWT, async (req, res) => {
     const expirationDate = new Date(req.query.expiration * 1000);
 
     await pool.query(
-      'INSERT INTO files(fileid, ownerid, filename, upload, expiration) VALUES ($1, $2, $3, current_timestamp, $4)',
-      [uuid, userId, req.query.filename, expirationDate],
+      'INSERT INTO files(fileid, ownerid, filename, upload, expiration, size) VALUES ($1, $2, $3, current_timestamp, $4, $5)',
+      [uuid, userId, req.query.filename, expirationDate, req.get('content-length')],
     );
     logger.info(`File upload complete: ${req.query.filename} ${uuid} ${req.get('content-length')} ${userId} ${new Date() - startTime}ms`);
     res.json({

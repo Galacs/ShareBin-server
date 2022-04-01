@@ -21,5 +21,6 @@ CREATE TABLE IF NOT EXISTS files (
 		REFERENCES users (userid),
 	filename varchar,
 	upload TIMESTAMP NOT NULL DEFAULT now(),
-	expiration TIMESTAMP
+	expiration TIMESTAMP,
+	size INTEGER
 );
