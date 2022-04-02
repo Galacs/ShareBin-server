@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS files (
 	filename varchar,
 	upload TIMESTAMP NOT NULL DEFAULT now(),
 	expiration TIMESTAMP,
-	size INTEGER
+	size BIGINT
 );
