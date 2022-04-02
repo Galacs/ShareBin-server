@@ -23,6 +23,7 @@
     "morgan": "^1.10.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "sanitize-filename": "^1.6.3",
     "supertest": "^6.2.2",
     "winston": "^3.6.0"
   },

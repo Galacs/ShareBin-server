@@ -1,7 +1,7 @@
 import express from 'express';
 import crypto from 'crypto';
-
 import jwt from 'jsonwebtoken';
+import sanitizeFilename from 'sanitize-filename';
 
 import { Upload } from '@aws-sdk/lib-storage';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
@@ -17,7 +17,7 @@ router.post('/', authenticateJWT, async (req, res) => {
   const startTime = new Date();
   if (req.query.filename === '') return res.json({ success: false, msg: 'empty file' });
   let uuid = encode(crypto.randomBytes(16));
-  req.query.filename = decodeURI(req.query.filename);
+  req.query.filename = sanitizeFilename(req.query.filename);
   async function keyExists(key) {
     try {
       await client.send(new HeadObjectCommand({

@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
+import sanitizeFilename from 'sanitize-filename';
 import { HeadObjectCommand, CreateBucketCommand } from '@aws-sdk/client-s3';
 
 import app from '../../server.js';
@@ -20,7 +21,7 @@ createBucket();
 describe('Testing files', () => {
   const username = crypto.randomBytes(8).toString('base64');
   const password = crypto.randomBytes(8).toString('base64');
-  const filename = 'file.test';
+  const filename = sanitizeFilename(crypto.randomBytes(8).toString('base64'));
   let user;
   let token;
   let hash;
@@ -68,7 +69,7 @@ describe('Testing files', () => {
     const file = crypto.randomBytes(3 * 10 ** 6);
     hash = crypto.createHash('sha256').update(file.toString()).digest('hex');
     const userId = jwt.decode(token).sub;
-    await supertest(app).post(`/files?filename=${encodeURI(filename)}&expiration=${Math.floor(new Date().getTime() / 1000 + 10000000)}`)
+    await supertest(app).post(`/files?filename=${encodeURIComponent(filename)}&expiration=${Math.floor(new Date().getTime() / 1000 + 10000000)}`)
       .set('Cookie', [`token=${token}`])
       .send(file)
       .expect(200)
