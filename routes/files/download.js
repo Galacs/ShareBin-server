@@ -37,10 +37,19 @@ router.get('/:key', async (req, res) => {
         'Content-Length': data.ContentLength,
       });
     }
-    res.on('close', () => data.Body.destroy());
-    res.on('finish', () => pool.query('UPDATE files SET downloaded = downloaded + 1 WHERE fileid = $1', [req.params.key]));
+    const startTime = new Date();
+    res.on('pipe', () => logger.info(`File download started: ${filename} ${req.params.key} ${data.ContentLength}`));
+    res.on('close', () => {
+      data.Body.destroy();
+      logger.info(`File upload interupted: ${filename} ${req.params.key} ${data.ContentLength} ${new Date() - startTime}ms`);
+    });
+    res.on('finish', () => {
+      pool.query('UPDATE files SET downloaded = downloaded + 1 WHERE fileid = $1', [req.params.key]);
+      logger.info(`File upload complete: ${filename} ${req.params.key} ${data.ContentLength} ${new Date() - startTime}ms`);
+    });
     await data.Body.pipe(res);
   } catch (error) {
+    logger.info(`File ${req.params.key} not found`);
     return res.status(404).json({ success: false, msg: 'Not found' });
   }
 });
