@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS files (
 	FOREIGN KEY (ownerid)
 		REFERENCES users (userid),
 	filename varchar,
-	upload TIMESTAMP NOT NULL DEFAULT now(),
-	expiration TIMESTAMP,
+	upload timestamp with time zone NOT NULL DEFAULT now(),
+	expiration timestamp with time zone,
 	size BIGINT
 );
