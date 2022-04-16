@@ -16,6 +16,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, msg: 'could not find user' });
     }
     if (validPassword(req.body.password, data.rows[0].password, data.rows[0].salt)) {
+      // Update ip and last login
+      const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      await pool.query('UPDATE users SET lastip = $1, lastlogin = now()', [clientIp]);
+
       const tokenObject = issueJWT(data.rows[0].userid);
       const refreshTokenObject = issueJWT(data.rows[0].userid, '31d', 2);
 
