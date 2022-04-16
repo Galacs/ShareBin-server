@@ -4,6 +4,8 @@ import mime from 'mime-types';
 import { GetObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3';
 
 import client, { bucket } from '../../config/s3.js';
+import pool from '../../config/database.js';
+import logger from '../../lib/logger.js';
 
 const router = express.Router();
 
@@ -36,7 +38,8 @@ router.get('/:key', async (req, res) => {
       });
     }
     res.on('close', () => data.Body.destroy());
-    data.Body.pipe(res);
+    res.on('finish', () => pool.query('UPDATE files SET downloaded = downloaded + 1 WHERE fileid = $1', [req.params.key]));
+    await data.Body.pipe(res);
   } catch (error) {
     return res.status(404).json({ success: false, msg: 'Not found' });
   }
