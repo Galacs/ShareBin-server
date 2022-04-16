@@ -61,11 +61,15 @@ router.post('/register', async (req, res) => {
   const { hash } = saltHash;
   const client = await pool.connect();
 
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
   try {
     await client.query('BEGIN');
-    await client.query('INSERT INTO users(userid) VALUES ($1)', [userid]);
-    await client.query('INSERT INTO auth.local(userid, username, salt, password) VALUES ($1, $2, $3, $4)',
-      [userid, req.body.username, salt, hash]);
+    await client.query('INSERT INTO users(userid, lastip) VALUES ($1, $2)', [userid, clientIp]);
+    await client.query(
+      'INSERT INTO auth.local(userid, username, salt, password) VALUES ($1, $2, $3, $4)',
+      [userid, req.body.username, salt, hash],
+    );
     await client.query('COMMIT');
     return res.json({ success: true });
   } catch (e) {

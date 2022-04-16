@@ -2,7 +2,9 @@
 CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE TABLE IF NOT EXISTS users (
-	userid varchar PRIMARY KEY
+	userid varchar PRIMARY KEY,
+	lastlogin timestamp with time zone NOT NULL DEFAULT now(),
+    lastip inet NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS auth.local (
