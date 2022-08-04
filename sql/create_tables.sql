@@ -25,5 +25,6 @@ CREATE TABLE IF NOT EXISTS files (
 	upload timestamp with time zone NOT NULL DEFAULT now(),
 	expiration timestamp with time zone,
 	size BIGINT,
-	downloaded integer NOT NULL DEFAULT 0
+	downloaded integer NOT NULL DEFAULT 0,
+	mime varchar NOT NULL
 );
