@@ -1,5 +1,4 @@
 import express from 'express';
-import mime from 'mime-types';
 
 import { GetObjectCommand, GetObjectTaggingCommand } from '@aws-sdk/client-s3';
 
@@ -21,11 +20,12 @@ router.get('/:key', async (req, res) => {
       Range: req.header('Range'),
     }));
     filename = filename.TagSet.find((obj) => obj.Key === 'filename').Value;
+    const mime = await pool.query('SELECT mime FROM files WHERE fileid = $1', [req.params.key]);
     if (req.header('Range')) {
       res.writeHead(206, {
         'Accept-Ranges': 'bytes',
         'Content-Disposition': `filename="${filename}"`,
-        'Content-Type': mime.contentType(filename) || 'application/octet-stream',
+        'Content-Type': mime.rows[0].mime,
         'Content-Range': data.ContentRange,
         'Content-Length': data.ContentLength,
       });
@@ -33,7 +33,7 @@ router.get('/:key', async (req, res) => {
       res.writeHead(200, {
         'Accept-Ranges': 'bytes',
         'Content-Disposition': `filename="${filename}"`,
-        'Content-Type': mime.contentType(filename) || 'application/octet-stream',
+        'Content-Type': mime.rows[0].mime,
         'Content-Length': data.ContentLength,
       });
     }
