@@ -36,14 +36,14 @@ router.post('/login', async (req, res) => {
 
       res.cookie('refreshToken', refreshTokenObject.token, {
         expires: refreshDate,
-        secure: false,
+        secure: true,
         httpOnly: true,
         path: '/auth/refresh',
         sameSite: 'strict',
       });
       res.cookie('token', tokenObject.token, {
         expires: date,
-        secure: false,
+        secure: true,
         httpOnly: true,
         sameSite: 'strict',
       });
